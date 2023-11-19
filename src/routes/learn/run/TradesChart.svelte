@@ -14,7 +14,7 @@
     function convertTradesToCandleStick(trades: Array<Trade>, closePrices: Array<number>){
         const candleSticks: Array<any> = []
         trades.forEach((t: Trade, i: number) => {
-            if (t.sell_step < minMaxStep[0] || t.buy_step > minMaxStep[1]) return
+            // if (t.sell_step < minMaxStep[0] || t.buy_step > minMaxStep[1]) return
             const prices = closePrices.slice(t.buy_step, t.sell_step + 1)
             const open = t.buy_price
             const close = t.sell_price
@@ -24,6 +24,7 @@
         })
         return candleSticks
     }
+    const candleSticks = convertTradesToCandleStick(trades, closePrices)
 
     $: options = {
         chart: {
@@ -39,7 +40,7 @@
         xaxis: {
             type: 'numeric',
             min: 0,
-            max: convertTradesToCandleStick(trades, closePrices).length,
+            max: candleSticks.length,
             labels: {
                 show: false,
             },
@@ -57,7 +58,7 @@
             tickAmount: 4,
         },
         series: [{
-            data: convertTradesToCandleStick(trades, closePrices)
+            data: candleSticks
         }],
     }
 </script>

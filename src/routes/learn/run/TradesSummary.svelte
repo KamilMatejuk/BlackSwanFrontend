@@ -98,7 +98,7 @@ optionsLoss.colors = [loss_color]
 <style>
     .layout {
         display: grid;
-        grid-template-columns: 2fr 3fr 2fr;
+        grid-template-columns: 2fr 2fr 2fr;
         align-items: flex-start;
         margin: 0 15px 20px 25px;
     }
@@ -123,6 +123,9 @@ optionsLoss.colors = [loss_color]
     .details .value {
         color: #ff4000cc;
         text-align: end;
+    }
+    .charts {
+        position: relative;
     }
     .chart {
         position: absolute;

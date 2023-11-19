@@ -179,15 +179,15 @@
 	}
 	.errors, .data {
 		margin: auto;
-		max-width: 600px;
+		max-width: 800px;
 	}
 	.data {
 		display: grid;
 		grid-template-columns: 1fr;
 	}
-	@media only screen and (min-width: 1300px) {
+	@media only screen and (min-width: 1450px) {
 		.data {
-			max-width: 1200px;
+			max-width: 1400px;
 			grid-template-columns: 1fr 1fr;
 			grid-gap: 25px;
 		}

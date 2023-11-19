@@ -72,7 +72,7 @@
             max: Math.max(...netWorth.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 1.02,
             forceNiceScale: false,
             labels: {
-                formatter: (value: number) => value.toFixed(1),
+                formatter: (value: number) => value.toFixed(2),
             },
             tickAmount: 5,
         },
