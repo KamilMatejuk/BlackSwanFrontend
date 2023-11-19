@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { mlflowPost } from '../../mlflow'
 
-	type Run = { name: String, time: Number, id: String }
+	type Run = { name: String, time: number, id: String }
 
 	let isLoading = true;
 	let runs: Array<Run> = [];
@@ -43,13 +43,22 @@
 	{#if isLoading}
 		<div class="loader"><img src={loader} alt='loader'/></div>
 	{:else}
-		<div class='row'><p>Time</p><p>Name</p><p>ID</p><p></p></div>
+		<div class='row'><p>Time</p><p>Name</p><p>ID</p><p>Train</p><p>Test</p></div>
 		{#each runs as run}
 		<div class='row'>
-			<p>{run.time}</p>
+			<p>{new Date(run.time).toLocaleDateString("pl-PL", { 
+				year: 'numeric', 
+				month: 'numeric', 
+				day: 'numeric',
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric',
+				hour12: false,
+			})}</p>
 			<p>{run.name}</p>
 			<p>{run.id}</p>
-			<a href="/learn/run?id={run.id}"><img src={rightArrow} alt=''/></a>
+			<a href="/learn/run?id={run.id}&stage=train"><img src={rightArrow} alt=''/></a>
+			<a href="/learn/run?id={run.id}&stage=test"><img src={rightArrow} alt=''/></a>
 		</div>
 		{/each}
 	{/if}
@@ -67,7 +76,7 @@
 	}
 	.row {
 		display: grid;
-		grid-template-columns: 1fr 1fr 2fr 50px;
+		grid-template-columns: 3fr 3fr 5fr 50px 50px;
 		padding: 10px;
 		border-top: 1px solid #ff4000cc;
 	}

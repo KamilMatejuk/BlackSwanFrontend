@@ -1,8 +1,8 @@
 <script lang="ts">
     export let errors: Array<String>
-    export let actions: Array<Number>
-    export let closePrices: Array<Number>
-    export let volumes: Array<Number>
+    export let actions: Array<number>
+    export let closePrices: Array<number>
+    export let volumes: Array<number>
 </script>
 
 <div>
