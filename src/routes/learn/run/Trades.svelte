@@ -63,6 +63,7 @@
 	.row a {
 		display: flex;
 	    justify-content: center;
+        cursor: pointer;
 	}
 	.row img {
 		width: 20px
