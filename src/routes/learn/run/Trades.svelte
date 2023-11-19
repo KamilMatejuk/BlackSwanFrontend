@@ -18,14 +18,18 @@
         <TradesChart trades={trades} closePrices={closePrices} bind:minMaxStep={minMaxStep}/>
 		<div class='row header'><p>Enter</p><p>Exit</p><p>Profit/Loss</p><p>Fee</p><p></p></div>
         {#each trades as trade}
-		    <div class='row'>
+        {#if trade.sell_step >= minMaxStep[0] && trade.buy_step <= minMaxStep[1]}
+            <div class='row'>
                 <p>{trade.buy_step} @ {trade.buy_price} $</p>
                 <p>{trade.sell_step} @ {trade.sell_price} $</p>
                 <p class={trade.profit > 0 ? 'profit' : 'loss'}>
                     {trade.profit.toFixed(2)}$ ({(100 * trade.profit / trade.buy_price).toFixed(2)}%)</p>
                 <p>0.00$</p>
-                <a href='#'><img src={rightArrow} alt=''/></a>
+                <a on:click={()=>{
+                    minMaxStep = [Math.max(0, trade.buy_step - 1), Math.min(closePrices.length - 1, trade.sell_step + 1)]
+                }}><img src={rightArrow} alt=''/></a>
             </div>
+        {/if}
         {/each}
     {/if}
 </div>
