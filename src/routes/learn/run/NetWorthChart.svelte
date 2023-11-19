@@ -6,9 +6,11 @@
         sell_price: number,
         profit: number,
     }
+    export let actions: Array<number>
     export let trades: Array<Trade>
     export let closePrices: Array<number>
     export let minMaxStep: Array<number>
+    export let showTrades: boolean
 
     import { onMount } from 'svelte';
 
@@ -16,6 +18,31 @@
     onMount(async () => {
         ApexChart = (await import('svelte-apexcharts')).chart
     })
+
+    function convertToVericalLines(actions: Array<number>, action: number, label: String, color: String){
+        if (!showTrades) return []
+        const lines = []
+        const transparent = '#00000000'
+        for (let i = 0; i < actions.length; i++) {
+            if (i < minMaxStep[0] || i > minMaxStep[1]) continue
+            if (actions[i] != action) continue
+            lines.push({
+                x: i,
+                borderColor: color,
+                label: {
+                    text: label,
+                    position: 'top',
+                    borderColor: transparent,
+                    style: {
+                        background: transparent,
+                        color: color
+                    },
+                }
+            })
+        }
+        console.log('lines', lines)
+        return lines
+    }
 
     function combineTradedIntoPrices(trades: Array<Trade>, closePrices: Array<number>) {
         const netWorth = []
@@ -78,7 +105,13 @@
         },
         series: [{
             data: netWorth
-        }]
+        }],
+        annotations: {
+            xaxis: [
+                ...convertToVericalLines(actions, 1, 'buy', '#df4fb6'),
+                ...convertToVericalLines(actions, 2, 'sell', '#4f1c82'),
+            ]
+        }
     }
 </script>
 

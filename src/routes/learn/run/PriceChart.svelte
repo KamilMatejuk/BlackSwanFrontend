@@ -1,5 +1,4 @@
 <script lang="ts">
-    export let actions: Array<number>
     export let closePrices: Array<number>
     export let minMaxStep: Array<number>
 
@@ -21,28 +20,6 @@
         }
         return candleSticks
     }
-
-    // function convertToVericalLines(actions: Array<number>, action: number, label: String, color: String){
-    //     const lines = []
-    //     const transparent = '#00000000'
-    //     for (let i = 0; i < actions.length; i++) {
-    //         if (actions[i] != action) continue
-    //         lines.push({
-    //             x: i,
-    //             borderColor: color,
-    //             label: {
-    //                 text: label,
-    //                 position: 'top',
-    //                 borderColor: transparent,
-    //                 style: {
-    //                     background: transparent,
-    //                     color: color
-    //                 },
-    //             }
-    //         })
-    //     }
-    //     return lines
-    // }
 
     $: options = {
         chart: {
@@ -78,12 +55,6 @@
         series: [{
             data: convertClosePricesToCandleStick(closePrices)
         }],
-        // annotations: {
-        //     xaxis: [
-        //         ...convertToVericalLines(actions, 1, 'buy', '#df4fb6'),
-        //         ...convertToVericalLines(actions, 2, 'sell', '#4f1c82'),
-        //     ]
-        // }
     }
 </script>
 

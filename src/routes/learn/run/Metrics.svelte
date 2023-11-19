@@ -4,6 +4,7 @@
     export let volumes: Array<number>
     export let trades: Array<Trade>
     export let minMaxStep: Array<number>
+    export let showTrades: boolean
     
     import type { Trade } from './+page.svelte';
     import Slider from '@bulatdashiev/svelte-slider';
@@ -14,9 +15,13 @@
     let tempMinMaxStep = [0, closePrices.length - 1]
 </script>
 
-<div>
+<div role='button' tabindex='-1' on:mouseup={() => {minMaxStep = tempMinMaxStep}}>
     {#if actions.length > 0 && closePrices.length > 0 && volumes.length > 0}
-        <div class="timeframe" role='button' tabindex='-1' on:mouseup={() => {minMaxStep = tempMinMaxStep}}>
+        <label>
+            <input type="checkbox" bind:checked={showTrades} />
+            Show trades
+        </label>
+        <div class="timeframe">
             <Slider
                 bind:value={tempMinMaxStep}
                 min={0}
@@ -25,8 +30,8 @@
                 order={true}
                 range/>
         </div>
-        <NetWorthChart trades={trades} closePrices={closePrices} bind:minMaxStep={minMaxStep}/>
-        <PriceChart actions={actions} closePrices={closePrices} bind:minMaxStep={minMaxStep}/>
+        <NetWorthChart actions={actions} trades={trades} closePrices={closePrices} bind:minMaxStep={minMaxStep} bind:showTrades={showTrades}/>
+        <PriceChart closePrices={closePrices} bind:minMaxStep={minMaxStep}/>
         <VolumeChart actions={actions} volumes={volumes} bind:minMaxStep={minMaxStep}/>
     {/if}
 </div>
@@ -40,4 +45,8 @@
         margin-left: 25px;
         margin-right: 10px;
 	}
+    label {
+        display: flex;
+        justify-content: center;
+    }
 </style>
