@@ -9,6 +9,7 @@
         ApexChart = (await import('svelte-apexcharts')).chart
     })
 
+    const overall_profit = trades.reduce((acc: number, v: Trade) => acc + v.profit, 0) / 10_000
     const trades_profit = trades.filter((t: Trade) => t.profit > 0)
     const trades_loss = trades.filter((t: Trade) => t.profit < 0)
 
@@ -52,9 +53,16 @@
                 },
                 dataLabels: {
                     name: {
+                        offsetY: -5,
+                        color: '#999999',
+                        fontWeight: 'normal',
+                        fontSize: '0.9rem',
                         show: false,
                     },
                     value: {
+                        offsetY: 0,
+                        color: overall_profit > 1 ? '#27E43B' : '#FF5733',
+                        fontSize: '1.3rem',
                         show: false,
                     },
                 },
@@ -62,13 +70,17 @@
         },
     };
 
-let optionsProfit = deepCopy(options)
-optionsProfit.series = [100 * trades_profit.length / trades.length]
-optionsProfit.colors = [profit_color]
-optionsProfit.plotOptions.radialBar.track.background = neutral_color
-let optionsLoss = deepCopy(options)
-optionsLoss.series = [100 * trades_loss.length / trades.length]
-optionsLoss.colors = [loss_color]
+    let optionsProfit = deepCopy(options)
+    optionsProfit.series = [100 * trades_profit.length / trades.length]
+    optionsProfit.colors = [profit_color]
+    optionsProfit.labels = ['Profit/Loss']
+    optionsProfit.plotOptions.radialBar.track.background = neutral_color
+    optionsProfit.plotOptions.radialBar.dataLabels.name.show = true
+    optionsProfit.plotOptions.radialBar.dataLabels.value.show = true
+    optionsProfit.plotOptions.radialBar.dataLabels.value.formatter = () => (100 * overall_profit).toFixed(2) + '%'
+    let optionsLoss = deepCopy(options)
+    optionsLoss.series = [100 * trades_loss.length / trades.length]
+    optionsLoss.colors = [loss_color]
 
 </script>
 
