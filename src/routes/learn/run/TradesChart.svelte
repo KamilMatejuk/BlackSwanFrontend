@@ -11,20 +11,20 @@
         ApexChart = (await import('svelte-apexcharts')).chart
     })
 
-    function convertTradesToCandleStick(trades: Array<Trade>, closePrices: Array<number>){
+    function convertTradesToCandleStick(trades: Array<Trade>, closePrices: Array<number>, minMaxStep: Array<number>){
         const candleSticks: Array<any> = []
-        trades.forEach((t: Trade, i: number) => {
-            // if (t.sell_step < minMaxStep[0] || t.buy_step > minMaxStep[1]) return
+        trades.forEach((t: Trade) => {
+            if (t.sell_step < minMaxStep[0] || t.buy_step > minMaxStep[1]) return
             const prices = closePrices.slice(t.buy_step, t.sell_step + 1)
             const open = t.buy_price
             const close = t.sell_price
             const high = Math.max(...prices)
             const low = Math.min(...prices)
-            candleSticks.push({x: i, y: [open, close, high, low]})
+            candleSticks.push({x: t.buy_step, y: [open, close, high, low]})
         })
         return candleSticks
     }
-    const candleSticks = convertTradesToCandleStick(trades, closePrices)
+    $: candleSticks = convertTradesToCandleStick(trades, closePrices, minMaxStep)
 
     $: options = {
         chart: {
@@ -39,8 +39,8 @@
         },
         xaxis: {
             type: 'numeric',
-            min: 0,
-            max: candleSticks.length,
+            min: candleSticks[0].x,
+            max: candleSticks[candleSticks.length - 1].x,
             labels: {
                 show: false,
             },
@@ -49,8 +49,8 @@
             },
         },
         yaxis: {
-            min: Math.min(...closePrices.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 0.98,
-            max: Math.max(...closePrices.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 1.02,
+            min: Math.min(...candleSticks.map(cs => cs.y[3])) * 0.98,
+            max: Math.max(...candleSticks.map(cs => cs.y[2])) * 1.02,
             forceNiceScale: false,
             labels: {
                 formatter: (value: number) => value.toFixed(2),
