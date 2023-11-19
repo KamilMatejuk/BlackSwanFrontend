@@ -89,8 +89,8 @@
         <div class='details'>
             <p>Profit</p>
             <p class='info'>Number</p><p class='value'>{trades_profit.length}</p>
-            <p class='info'>Avg profit</p><p class='value'>{avg(trades_profit.map(t => t.profit)).toFixed(2)} $</p>
-            <p class='info'>Avg profit %</p><p class='value'>{avg(trades_profit.map(t => 100 * t.profit / t.buy_price)).toFixed(2)} %</p>
+            <p class='info'>Avg profit</p><p class='value'>{avg(trades_profit.map(t => t.profit)).toFixed(2)}$</p>
+            <p class='info'>Avg profit %</p><p class='value'>{avg(trades_profit.map(t => 100 * t.profit / t.buy_price)).toFixed(2)}%</p>
             <p class='info'>Avg time</p><p class='value'>{avg(trades_profit.map(t => t.sell_step - t.buy_step)).toFixed(2)} steps</p>
         </div>
         <div class='charts'>
@@ -100,8 +100,8 @@
         <div class='details'>
             <p>Loss</p>
             <p class='info'>Number</p><p class='value'>{trades_loss.length}</p>
-            <p class='info'>Avg profit</p><p class='value'>{avg(trades_loss.map(t => t.profit)).toFixed(2)} $</p>
-            <p class='info'>Avg profit %</p><p class='value'>{avg(trades_loss.map(t => 100 * t.profit / t.buy_price)).toFixed(2)} %</p>
+            <p class='info'>Avg loss</p><p class='value'>{avg(trades_loss.map(t => t.profit)).toFixed(2)}$</p>
+            <p class='info'>Avg loss %</p><p class='value'>{avg(trades_loss.map(t => 100 * t.profit / t.buy_price)).toFixed(2)}%</p>
             <p class='info'>Avg time</p><p class='value'>{avg(trades_loss.map(t => t.sell_step - t.buy_step)).toFixed(2)} steps</p>
         </div>
     {/if}

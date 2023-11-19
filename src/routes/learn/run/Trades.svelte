@@ -20,11 +20,11 @@
         {#each trades as trade}
         {#if trade.sell_step >= minMaxStep[0] && trade.buy_step <= minMaxStep[1]}
             <div class='row'>
-                <p>{trade.buy_step} @ {trade.buy_price} $</p>
-                <p>{trade.sell_step} @ {trade.sell_price} $</p>
+                <p>{trade.buy_step} @ {trade.buy_price}$</p>
+                <p>{trade.sell_step} @ {trade.sell_price}$</p>
                 <p class={trade.profit > 0 ? 'profit' : 'loss'}>
                     {trade.profit.toFixed(2)}$ ({(100 * trade.profit / trade.buy_price).toFixed(2)}%)</p>
-                <p>0.00$</p>
+                <p>TBD</p>
                 <a on:click={()=>{
                     minMaxStep = [Math.max(0, trade.buy_step - 1), Math.min(closePrices.length - 1, trade.sell_step + 1)]
                 }}><img src={rightArrow} alt=''/></a>
