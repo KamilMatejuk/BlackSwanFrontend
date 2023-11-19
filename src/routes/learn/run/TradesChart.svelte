@@ -1,16 +1,10 @@
 <script lang="ts">
-    type Trade = {
-        buy_step: number,
-        buy_price: number,
-        sell_step: number,
-        sell_price: number,
-        profit: number,
-    }
     export let trades: Array<Trade>
     export let closePrices: Array<number>
     export let minMaxStep: Array<number>
 
     import { onMount } from 'svelte';
+	import type { Trade } from './+page.svelte';
 
     let ApexChart: any;
     onMount(async () => {
@@ -68,7 +62,7 @@
     }
 </script>
 
-<div>
+<div class='title-container'>
     {#if ApexChart}
         <p class='title'>Trades</p>
         <div use:ApexChart={options}/>
@@ -76,6 +70,9 @@
 </div>
 
 <style>
+    .title-container {
+        position: relative;
+    }
     .title {
         position: absolute;
         margin: 0;

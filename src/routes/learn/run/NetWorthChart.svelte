@@ -82,7 +82,7 @@
     }
 </script>
 
-<div>
+<div class='title-container'>
     {#if ApexChart}
         <p class='title'>NetWorth</p>
         <div use:ApexChart={options}/>
@@ -90,6 +90,9 @@
 </div>
 
 <style>
+    .title-container {
+        position: relative;
+    }
     .title {
         position: absolute;
         margin: 0;

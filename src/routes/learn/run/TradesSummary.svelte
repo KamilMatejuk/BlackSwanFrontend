@@ -1,14 +1,8 @@
 <script lang="ts">
-    type Trade = {
-        buy_step: number,
-        buy_price: number,
-        sell_step: number,
-        sell_price: number,
-        profit: number,
-    }
     export let trades: Array<Trade>
 
     import { onMount } from 'svelte';
+	import type { Trade } from './+page.svelte';
 
     let ApexChart: any;
     onMount(async () => {
