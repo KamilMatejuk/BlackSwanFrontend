@@ -49,10 +49,9 @@
 		const data = await fetch(`/data/${filename}?url`)
 			.then(response => response.json())
 			.then(data => ({
-					close: Object.keys(data.close).sort().map(key => data.close[key]),
-					volume: Object.keys(data.volume).sort().map(key => data.volume[key]),
-				})
-			).catch((error) => {
+				close: Object.keys(data.close).sort((a, b) => parseInt(a) - parseInt(b)).map(key => data.close[key]),
+				volume: Object.keys(data.volume).sort((a, b) => parseInt(a) - parseInt(b)).map(key => data.volume[key]),
+			})).catch((error) => {
 				errors.push(`Failed loading datafile ${param_name}: ${error}`)
 				return { close: [], volume: [] }
 			})
@@ -78,15 +77,15 @@
                 continue
             }
         }
-        if (('buy_step' in trade) && !('sell_step' in trade)) {
-            const i = actions.length - 1
-			if (closePrices[i]) {
-				trade['sell_step'] = i
-				trade['sell_price'] = closePrices[i]
-				trade['profit'] = trade['sell_price'] - trade['buy_price']
-				trades.push(trade)
-			}
-        }
+        // if (('buy_step' in trade) && !('sell_step' in trade)) {
+        //     const i = actions.length - 1
+		// 	if (closePrices[i]) {
+		// 		trade['sell_step'] = i
+		// 		trade['sell_price'] = closePrices[i]
+		// 		trade['profit'] = trade['sell_price'] - trade['buy_price']
+		// 		trades.push(trade)
+		// 	}
+        // }
         return trades        
     }
 
