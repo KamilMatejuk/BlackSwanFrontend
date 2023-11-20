@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { mlflowPost } from '../../mlflow'
 
-	type Run = { name: String, time: number, id: String }
+	type Run = { name: String, time: number, id: String, train_epochs: number }
 
 	let isLoading = true;
 	let runs: Array<Run> = [];
@@ -23,11 +23,16 @@
 			isLoading = false;
 			return
 		}
-		runs = data.runs.map((run: Record<string, any>) => { return {
+		runs = data.runs
+		.filter((run: Record<string, any>) => run.info) 
+		.filter((run: Record<string, any>) => run.data) 
+		.filter((run: Record<string, any>) => run.data.params) 
+		.map((run: Record<string, any>) => ({
 			name: run.info.run_name,
 			time: run.info.start_time,
 			id: run.info.run_id,
-		} as Run })
+			train_epochs: (run.data.params.filter((p: Record<string, string>) => p.key == 'epochs')[0] || {value: 0}).value
+		} as Run))
 		isLoading = false;
 	})
 
@@ -43,7 +48,7 @@
 	{#if isLoading}
 		<div class="loader"><img src={loader} alt='loader'/></div>
 	{:else}
-		<div class='row'><p>Time</p><p>Name</p><p>ID</p><p>Train</p><p>Test</p></div>
+		<div class='row'><p>Time</p><p>Name</p><p>ID</p><p></p></div>
 		{#each runs as run}
 		<div class='row'>
 			<p>{new Date(run.time).toLocaleDateString("pl-PL", { 
@@ -57,8 +62,7 @@
 			})}</p>
 			<p>{run.name}</p>
 			<p>{run.id}</p>
-			<a href="/learn/run?id={run.id}&stage=train"><img src={rightArrow} alt=''/></a>
-			<a href="/learn/run?id={run.id}&stage=test"><img src={rightArrow} alt=''/></a>
+			<a href="/learn/run?id={run.id}"><img src={rightArrow} alt=''/></a>
 		</div>
 		{/each}
 	{/if}
