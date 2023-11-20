@@ -20,7 +20,7 @@
             const close = t.sell_price
             const high = Math.max(...prices)
             const low = Math.min(...prices)
-            candleSticks.push({x: t.buy_step, y: [open, close, high, low]})
+            candleSticks.push({x: t.buy_step, y: [open, high, low, close]})
         })
         return candleSticks
     }

@@ -16,7 +16,7 @@
             const open = closePrices[i-1]
             const high = Math.max(open, close)
             const low = Math.min(open, close)
-            candleSticks.push({x: i, y: [open, close, high, low]})
+            candleSticks.push({x: i, y: [open, high, low, close]})
         }
         return candleSticks
     }

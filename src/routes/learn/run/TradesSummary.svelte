@@ -9,7 +9,21 @@
         ApexChart = (await import('svelte-apexcharts')).chart
     })
 
-    const overall_profit = trades.reduce((acc: number, v: Trade) => acc + v.profit, 0) / 10_000
+    function updateTradesProfit(trades: Array<Trade>, account: number) {
+        const tradesUpdatedProfit: Array<Trade> = []
+        trades.forEach((t: Trade) => {
+            let newAccount = account / t.buy_price * t.sell_price
+            t.profit = newAccount - account
+            tradesUpdatedProfit.push(t)
+            account = newAccount
+        })
+        return tradesUpdatedProfit
+    }
+
+    const starting_balance = 10_000
+    trades = updateTradesProfit(trades, starting_balance)
+
+    const overall_profit = trades.reduce((acc: number, v: Trade) => acc + v.profit, starting_balance) / starting_balance
     const trades_profit = trades.filter((t: Trade) => t.profit > 0)
     const trades_loss = trades.filter((t: Trade) => t.profit < 0)
 
