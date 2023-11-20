@@ -13,7 +13,7 @@
 </script>
 
 <div>
-    {#if actions.length > 0 && closePrices.length > 0 && volumes.length > 0}
+    {#if actions.length > 0 && closePrices.length > 0 && volumes.length > 0 && trades.length > 0}
         <TradesSummary trades={trades}/>
         <TradesChart trades={trades} closePrices={closePrices} bind:minMaxStep={minMaxStep}/>
 		<div class='row header'><p>Enter</p><p>Exit</p><p>Profit/Loss</p><p>Fee</p><p></p></div>

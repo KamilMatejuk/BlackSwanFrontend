@@ -121,7 +121,6 @@
 		trades = convertActionsToTrades(actions, closePrices)
 		minMaxStep = [0, closePrices.length - 1]
 		isLoading = false
-
 		// console.log(closePrices)
 		// console.log(volumes)
 		// console.log(actions)
@@ -151,7 +150,8 @@
 				actions={actions}
 				closePrices={closePrices}
 				volumes={volumes}
-				errors={errors}/>
+				errors={errors}
+				trades={trades}/>
 		</div>
 		<div class="data">
 			<div>

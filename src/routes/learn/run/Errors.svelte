@@ -1,8 +1,11 @@
 <script lang="ts">
+	import type { Trade } from "./+page.svelte";
+
     export let errors: Array<String>
     export let actions: Array<number>
     export let closePrices: Array<number>
     export let volumes: Array<number>
+    export let trades: Array<Trade>
 </script>
 
 <div>
@@ -13,7 +16,7 @@
             {/each}
         </ul>
     {/if}
-    {#if actions.length == 0 || closePrices.length == 0 || volumes.length == 0}
+    {#if actions.length == 0 || closePrices.length == 0 || volumes.length == 0 || trades.length == 0}
         <ul class='message warning'>
             {#if actions.length == 0}
                 <li>Actions are empty (0 items found)</li>
@@ -23,6 +26,9 @@
             {/if}
             {#if volumes.length == 0}
                 <li>Volumes are empty (0 items found)</li>
+            {/if}
+            {#if trades.length == 0}
+                <li>Trades are empty (0 items found)</li>
             {/if}
         </ul>
     {/if}
