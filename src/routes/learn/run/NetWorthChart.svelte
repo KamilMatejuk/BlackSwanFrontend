@@ -40,7 +40,6 @@
                 }
             })
         }
-        console.log('lines', lines)
         return lines
     }
 
