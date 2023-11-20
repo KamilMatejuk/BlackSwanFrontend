@@ -77,7 +77,7 @@
     optionsProfit.plotOptions.radialBar.track.background = neutral_color
     optionsProfit.plotOptions.radialBar.dataLabels.name.show = true
     optionsProfit.plotOptions.radialBar.dataLabels.value.show = true
-    optionsProfit.plotOptions.radialBar.dataLabels.value.formatter = () => (100 * overall_profit).toFixed(2) + '%'
+    optionsProfit.plotOptions.radialBar.dataLabels.value.formatter = () => (100 * (overall_profit - 1)).toFixed(2) + '%'
     let optionsLoss = deepCopy(options)
     optionsLoss.series = [100 * trades_loss.length / trades.length]
     optionsLoss.colors = [loss_color]
