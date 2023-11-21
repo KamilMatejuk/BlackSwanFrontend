@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { mlflowPost } from '../../mlflow'
 
-	type Run = { name: String, time: number, id: String, train_epochs: number }
+	type Run = { name: string, time: number, id: string, train_epochs: number }
 
 	let isLoading = true;
 	let runs: Array<Run> = [];

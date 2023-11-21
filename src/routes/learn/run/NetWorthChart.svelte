@@ -19,7 +19,7 @@
         ApexChart = (await import('svelte-apexcharts')).chart
     })
 
-    function convertToVericalLines(actions: Array<number>, action: number, label: String, color: String){
+    function convertToVericalLines(actions: Array<number>, action: number, label: string, color: string){
         if (!showTrades) return []
         const lines = []
         const transparent = '#00000000'

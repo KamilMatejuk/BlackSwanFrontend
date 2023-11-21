@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Trade } from "./+page.svelte";
 
-    export let errors: Array<String>
+    export let errors: Array<string>
     export let actions: Array<number>
     export let closePrices: Array<number>
     export let volumes: Array<number>

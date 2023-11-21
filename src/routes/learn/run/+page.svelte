@@ -20,17 +20,74 @@
 	const stage = $page.url.searchParams.get('stage') || 'test/1'
 	
 	let isLoading = true
-	let stages: Array<String> = []
-	let errors: Array<String> = []
-	let closePrices: Array<number> = []
-	let actions: Array<number> = []
-	let volumes: Array<number> = []
-	let trades: Array<Trade> = []
-	let minMaxStep: Array<number> = []
+	let errors: Array<string> = []
+	let stages: Array<string> = []
+	let closePrices: Record<string, Array<number>> = {}
+	let volumes: Record<string, Array<number>> = {}
+	let actions: Record<string, Array<number>> = {}
+	let trades: Record<string, Array<Trade>> = {}
+	
+	let stagePrice: Array<number> = []
+	let stageVolume: Array<number> = []
+	let stageAction: Array<number> = []
+	let stageTrade: Array<Trade> = []
+	let stageMinMaxStep: Array<number> = []
 	let showTrades: boolean = false
 
-	async function getMetric(metric_name: String): Promise<Array<number>> {
-		type Metric = { key: String, value: number, timestamp: number, step: number }
+	function saveToLocalStorage() {
+		localStorage.setItem(id, JSON.stringify({
+			stages: stages,
+			closePrices: closePrices,
+			volumes: volumes,
+			actions: actions,
+			trades: trades,
+		}))
+	}
+
+	function getFromLocalStorage() {
+		const stored = localStorage.getItem(id);
+		if (!stored) return false
+		const stored_obj = JSON.parse(stored)
+		console.log('Loaded from storage', stored_obj)
+		stages = stored_obj.stages as Array<string>
+		closePrices = stored_obj.closePrices as Record<string, Array<number>>
+		volumes = stored_obj.volumes as Record<string, Array<number>>
+		actions = stored_obj.actions as Record<string, Array<number>>
+		trades = stored_obj.trades as Record<string, Array<Trade>>
+		return true
+	}
+
+	async function getFromMlflow() {
+		const data = await mlflowGet(`runs/get?run_id=${id}`)
+		if (!data.correct) {
+			console.log('error', data.error)
+			alert(`Failed getting run info: ${data.error}`)
+			return false
+		}
+		stages = data.run.data.metrics
+			.map((m: any) => m.key)
+			.filter((m: string) => m.includes('/action'))
+			.map((m: string) => m.replace('/action', ''))
+			.sort((m1: string, m2: string) => parseInt(m1.split('/')[1]) - parseInt(m2.split('/')[1]))
+
+		await Promise.all(
+			['train', 'test'].map(async (stage: string) => {
+				const datafile = await getDatafile(data, `${stage}_data`)
+				closePrices[stage] = datafile.close
+				volumes[stage] = datafile.volume
+			})
+		)
+		await Promise.all(
+			stages.map(async (stage: string) => {
+				actions[stage] = await getMetric(`${stage}/action`)
+				trades[stage] = convertActionsToTrades(actions[stage], closePrices[stage.split('/')[0]])
+			})
+		)
+		return true
+	} 
+
+	async function getMetric(metric_name: string): Promise<Array<number>> {
+		type Metric = { key: string, value: number, timestamp: number, step: number }
 		const values = await mlflowGet(`metrics/get-history?run_id=${id}&metric_key=${metric_name}`)
 		if (!values.correct) {
 			errors.push(`Failed getting metric ${metric_name}: ${values.error}`)
@@ -39,8 +96,8 @@
 		return values.metrics.sort((v: Metric) => v.step).map((v: Metric) => v.value)
 	}
 
-	async function getDatafile(param_data: any, param_name: String) {
-		type Param = { key: String, value: String }
+	async function getDatafile(param_data: any, param_name: string) {
+		type Param = { key: string, value: string }
 		const filename = param_data.run.data.params.filter((p: Param) => p.key == param_name).map((p: Param) => p.value)[0]
 		if (!filename) {
 			errors.push(`Failed loading datafile ${param_name}`)
@@ -56,6 +113,14 @@
 				return { close: [], volume: [] }
 			})
 		return data
+	}
+
+	function updateSelection() {
+		stagePrice = closePrices[stage.split('/')[0]]
+		stageVolume = volumes[stage.split('/')[0]]
+		stageAction = actions[stage]
+		stageTrade = trades[stage]
+		stageMinMaxStep = [0, stagePrice.length - 1]
 	}
 
 	function convertActionsToTrades(actions: Array<number>, closePrices: Array<number>){
@@ -96,34 +161,18 @@
 			isLoading = false
 			return
 		}
-		const data = await mlflowGet(`runs/get?run_id=${id}`)
-		if (!data.correct) {
-			console.log('error', data.error)
-			alert(`Failed getting run info: ${data.error}`)
+		if (getFromLocalStorage()) {
+			updateSelection()
 			isLoading = false
 			return
 		}
-		stages = data.run.data.metrics
-			.map((m: any) => m.key)
-			.filter((m: string) => m.includes('/action'))
-			.map((m: string) => m.replace('/action', ''))
-			.sort((m1: string, m2: string) => parseInt(m1.split('/')[1]) - parseInt(m2.split('/')[1]))
-		actions = await getMetric(`${stage}/action`)
-		let datafile
-		if (stage.includes('train')) {
-			datafile = await getDatafile(data, 'train_data')
-		} else {
-			datafile = await getDatafile(data, 'test_data')
+		if (await getFromMlflow()) {
+			saveToLocalStorage()
+			updateSelection()
+			isLoading = false
+			return
 		}
-		closePrices = datafile.close
-		volumes = datafile.volume
-		trades = convertActionsToTrades(actions, closePrices)
-		minMaxStep = [0, closePrices.length - 1]
 		isLoading = false
-		// console.log(closePrices)
-		// console.log(volumes)
-		// console.log(actions)
-		// console.log(trades)
 	})
 	
 </script>
@@ -146,29 +195,29 @@
 	{:else}
 		<div class="errors">
 			<Errors
-				actions={actions}
-				closePrices={closePrices}
-				volumes={volumes}
+				actions={stageAction}
+				closePrices={stagePrice}
+				volumes={stageVolume}
 				errors={errors}
-				trades={trades}/>
+				trades={stageTrade}/>
 		</div>
 		<div class="data">
 			<div>
 				<Metrics
-					bind:minMaxStep={minMaxStep}
+					bind:minMaxStep={stageMinMaxStep}
 					bind:showTrades={showTrades}
-					actions={actions}
-					closePrices={closePrices}
-					volumes={volumes}
-					trades={trades}/>
+					actions={stageAction}
+					closePrices={stagePrice}
+					volumes={stageVolume}
+					trades={stageTrade}/>
 			</div>
 			<div>
 				<Trades
-					bind:minMaxStep={minMaxStep}
-					actions={actions}
-					closePrices={closePrices}
-					volumes={volumes}
-					trades={trades}/>
+					bind:minMaxStep={stageMinMaxStep}
+					actions={stageAction}
+					closePrices={stagePrice}
+					volumes={stageVolume}
+					trades={stageTrade}/>
 			</div>
 		</div>
 	{/if}
