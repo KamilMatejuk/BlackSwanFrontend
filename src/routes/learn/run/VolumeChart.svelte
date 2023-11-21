@@ -1,7 +1,6 @@
 <script lang="ts">
     export let actions: Array<number>
     export let volumes: Array<number>
-    export let minMaxStep: Array<number>
 
     import { onMount } from 'svelte';
 
@@ -26,8 +25,8 @@
         },
         xaxis: {
             type: 'numeric',
-            min: minMaxStep[0],
-            max: minMaxStep[1],
+            min: 0,
+            max: volumes.length - 1,
             labels: {
                 show: false,
             },
@@ -36,8 +35,8 @@
             },
         },
         yaxis: {
-            min: Math.min(...volumes.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 0.98,
-            max: Math.max(...volumes.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 1.02,
+            min: Math.min(...volumes) * 0.98,
+            max: Math.max(...volumes) * 1.02,
             forceNiceScale: false,
             labels: {
                 formatter: (value: number) => value.toFixed(1),

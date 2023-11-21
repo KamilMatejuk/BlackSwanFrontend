@@ -33,7 +33,6 @@
 	let stageAction: Array<number> = []
 	let stageTrade: Array<Trade> = []
 	let stageMinMaxStep: Array<number> = []
-	let tempMinMaxStep: Array<number> = []
 
 
 	function saveToLocalStorage() {
@@ -117,15 +116,6 @@
 		return data
 	}
 
-	function updateSelection() {
-		stagePrice = closePrices[stage.split('/')[0]]
-		stageVolume = volumes[stage.split('/')[0]]
-		stageAction = actions[stage]
-		stageTrade = trades[stage]
-		stageMinMaxStep = [0, stagePrice.length - 1]
-		tempMinMaxStep = [0, stagePrice.length - 1]
-	}
-
 	function convertActionsToTrades(actions: Array<number>, closePrices: Array<number>){
         const trades = []
         let trade: any = {}
@@ -157,6 +147,21 @@
         return trades        
     }
 
+	function updateStage() {
+		stagePrice = closePrices[stage.split('/')[0]]
+		stageVolume = volumes[stage.split('/')[0]]
+		stageAction = actions[stage]
+		stageTrade = trades[stage]
+		stageMinMaxStep = [0, stagePrice.length - 1]
+	}
+
+	function updateSelectedRange() {
+		const [rangeStart, rangeEnd] = stageMinMaxStep
+		stagePrice = closePrices[stage.split('/')[0]].filter((v: number, i: number) => (i >= rangeStart && i <= rangeEnd))
+		stageVolume = volumes[stage.split('/')[0]].filter((v: number, i: number) => (i >= rangeStart && i <= rangeEnd))
+		stageAction = actions[stage].filter((v: number, i: number) => (i >= rangeStart && i <= rangeEnd))
+		stageTrade = trades[stage].filter((v: Trade) => (v.buy_step >= rangeStart && v.sell_step <= rangeEnd))
+	}
 
 	onMount(async () => {
 		if (id.length == 0) {
@@ -165,13 +170,13 @@
 			return
 		}
 		if (getFromLocalStorage()) {
-			updateSelection()
+			updateStage()
 			isLoading = false
 			return
 		}
 		if (await getFromMlflow()) {
 			saveToLocalStorage()
-			updateSelection()
+			updateStage()
 			isLoading = false
 			return
 		}
@@ -208,19 +213,18 @@
 			class="data"
 			role='button'
 			tabindex='-1'
-			on:mouseup={() => {stageMinMaxStep = tempMinMaxStep}}>
+			on:mouseup={updateSelectedRange}>
 			<div>
 				<div class="timeframe">
 					<Slider
-						bind:value={tempMinMaxStep}
+						bind:value={stageMinMaxStep}
 						min={0}
-						max={stagePrice.length - 1}
+						max={closePrices[stage.split('/')[0]].length - 1}
 						step={10}
 						order={true}
 						range/>
 				</div>
 				<Metrics
-					bind:minMaxStep={stageMinMaxStep}
 					actions={stageAction}
 					closePrices={stagePrice}
 					volumes={stageVolume}
@@ -228,7 +232,6 @@
 			</div>
 			<div>
 				<Trades
-					bind:minMaxStep={stageMinMaxStep}
 					actions={stageAction}
 					closePrices={stagePrice}
 					volumes={stageVolume}

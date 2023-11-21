@@ -3,22 +3,19 @@
     export let closePrices: Array<number>
     export let volumes: Array<number>
     export let trades: Array<Trade>
-    export let minMaxStep: Array<number>
     
     import type { Trade } from './+page.svelte';
     import rightArrow from '$lib/images/right-arrow.svg'
 	import TradesSummary from './TradesSummary.svelte';
 	import TradesChart from './TradesChart.svelte';
-
 </script>
 
 <div>
     {#if actions.length > 0 && closePrices.length > 0 && volumes.length > 0 && trades.length > 0}
         <TradesSummary trades={trades}/>
-        <TradesChart trades={trades} closePrices={closePrices} bind:minMaxStep={minMaxStep}/>
+        <TradesChart trades={trades} closePrices={closePrices}/>
 		<div class='row header'><p>Enter</p><p>Exit</p><p>Profit/Loss</p><p>Fee</p><p></p></div>
         {#each trades as trade}
-        {#if trade.sell_step >= minMaxStep[0] && trade.buy_step <= minMaxStep[1]}
             <div class='row'>
                 <p>{trade.buy_step} @ {trade.buy_price.toFixed(2)}$</p>
                 <p>{trade.sell_step} @ {trade.sell_price.toFixed(2)}$</p>
@@ -26,10 +23,9 @@
                     {trade.profit.toFixed(2)}$ ({(100 * trade.profit / trade.buy_price).toFixed(2)}%)</p>
                 <p>TBD</p>
                 <a on:click={()=>{
-                    minMaxStep = [Math.max(0, trade.buy_step - 1), Math.min(closePrices.length - 1, trade.sell_step + 1)]
+                    // minMaxStep = [Math.max(0, trade.buy_step - 1), Math.min(closePrices.length - 1, trade.sell_step + 1)]
                 }}><img src={rightArrow} alt=''/></a>
             </div>
-        {/if}
         {/each}
     {/if}
 </div>

@@ -3,7 +3,6 @@
     export let closePrices: Array<number>
     export let volumes: Array<number>
     export let trades: Array<Trade>
-    export let minMaxStep: Array<number>
     
     import type { Trade } from './+page.svelte';
 	import PriceChart from './PriceChart.svelte';
@@ -15,14 +14,13 @@
 
 <div>
     {#if actions.length > 0 && closePrices.length > 0 && volumes.length > 0}
-        <label>
+        <!-- <label>
             <input type="checkbox" bind:checked={showTrades} />
             Show trades
-        </label>
-        
-        <NetWorthChart actions={actions} trades={trades} closePrices={closePrices} bind:minMaxStep={minMaxStep} bind:showTrades={showTrades}/>
-        <PriceChart closePrices={closePrices} bind:minMaxStep={minMaxStep}/>
-        <VolumeChart actions={actions} volumes={volumes} bind:minMaxStep={minMaxStep}/>
+        </label> -->
+        <NetWorthChart actions={actions} trades={trades} closePrices={closePrices} showTrades={showTrades}/>
+        <PriceChart closePrices={closePrices}/>
+        <VolumeChart actions={actions} volumes={volumes}/>
     {/if}
 </div>
 

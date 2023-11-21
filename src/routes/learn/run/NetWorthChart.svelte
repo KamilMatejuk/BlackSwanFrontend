@@ -9,7 +9,6 @@
     export let actions: Array<number>
     export let trades: Array<Trade>
     export let closePrices: Array<number>
-    export let minMaxStep: Array<number>
     export let showTrades: boolean
 
     import { onMount } from 'svelte';
@@ -24,7 +23,6 @@
         const lines = []
         const transparent = '#00000000'
         for (let i = 0; i < actions.length; i++) {
-            if (i < minMaxStep[0] || i > minMaxStep[1]) continue
             if (actions[i] != action) continue
             lines.push({
                 x: i,
@@ -63,7 +61,7 @@
         return netWorth
     }
 
-    const netWorth = combineTradedIntoPrices(trades, closePrices)
+    $: netWorth = combineTradedIntoPrices(trades, closePrices)
 
     $: options = {
         chart: {
@@ -84,8 +82,8 @@
         },
         xaxis: {
             type: 'numeric',
-            min: minMaxStep[0],
-            max: minMaxStep[1],
+            min: 0,
+            max: netWorth.length - 1,
             labels: {
                 show: false,
             },
@@ -94,8 +92,8 @@
             },
         },
         yaxis: {
-            min: Math.min(...netWorth.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 0.98,
-            max: Math.max(...netWorth.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 1.02,
+            min: Math.min(...netWorth) * 0.98,
+            max: Math.max(...netWorth) * 1.02,
             forceNiceScale: false,
             labels: {
                 formatter: (value: number) => value.toFixed(2),

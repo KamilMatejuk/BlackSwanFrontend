@@ -1,7 +1,6 @@
 <script lang="ts">
     export let trades: Array<Trade>
     export let closePrices: Array<number>
-    export let minMaxStep: Array<number>
 
     import { onMount } from 'svelte';
 	import type { Trade } from './+page.svelte';
@@ -11,10 +10,9 @@
         ApexChart = (await import('svelte-apexcharts')).chart
     })
 
-    function convertTradesToCandleStick(trades: Array<Trade>, closePrices: Array<number>, minMaxStep: Array<number>){
+    function convertTradesToCandleStick(trades: Array<Trade>, closePrices: Array<number>){
         const candleSticks: Array<any> = []
         trades.forEach((t: Trade) => {
-            if (t.sell_step < minMaxStep[0] || t.buy_step > minMaxStep[1]) return
             const prices = closePrices.slice(t.buy_step, t.sell_step + 1)
             const open = t.buy_price
             const close = t.sell_price
@@ -24,7 +22,8 @@
         })
         return candleSticks
     }
-    $: candleSticks = convertTradesToCandleStick(trades, closePrices, minMaxStep)
+
+    $: candleSticks = convertTradesToCandleStick(trades, closePrices)
 
     $: options = {
         chart: {

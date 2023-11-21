@@ -1,6 +1,5 @@
 <script lang="ts">
     export let closePrices: Array<number>
-    export let minMaxStep: Array<number>
 
     import { onMount } from 'svelte';
 
@@ -11,7 +10,7 @@
 
     function convertClosePricesToCandleStick(closePrices: Array<number>){
         const candleSticks = []
-        for (let i = minMaxStep[0]+1; i < minMaxStep[1]; i++) {
+        for (let i = 0; i < closePrices.length; i++) {
             const close = closePrices[i]
             const open = closePrices[i-1]
             const high = Math.max(open, close)
@@ -20,6 +19,8 @@
         }
         return candleSticks
     }
+
+    $: candleSticks = convertClosePricesToCandleStick(closePrices)
 
     $: options = {
         chart: {
@@ -34,8 +35,8 @@
         },
         xaxis: {
             type: 'numeric',
-            min: minMaxStep[0],
-            max: minMaxStep[1],
+            min: 0,
+            max: candleSticks.length - 1,
             labels: {
                 show: false,
             },
@@ -44,8 +45,8 @@
             },
         },
         yaxis: {
-            min: Math.min(...closePrices.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 0.98,
-            max: Math.max(...closePrices.filter((p, i) => i >= minMaxStep[0] && i <= minMaxStep[1])) * 1.02,
+            min: Math.min(...closePrices) * 0.98,
+            max: Math.max(...closePrices) * 1.02,
             forceNiceScale: false,
             labels: {
                 formatter: (value: number) => value.toFixed(2),
@@ -53,7 +54,7 @@
             tickAmount: 7,
         },
         series: [{
-            data: convertClosePricesToCandleStick(closePrices)
+            data: candleSticks,
         }],
     }
 </script>
