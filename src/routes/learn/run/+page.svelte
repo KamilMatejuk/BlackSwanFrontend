@@ -8,6 +8,7 @@
     }
 </script>
 <script lang="ts">
+    import Slider from '@bulatdashiev/svelte-slider';
 	import loader from '$lib/images/loader.svg'
 	import Trades from './Trades.svelte'
 	import Metrics from './Metrics.svelte';
@@ -32,7 +33,8 @@
 	let stageAction: Array<number> = []
 	let stageTrade: Array<Trade> = []
 	let stageMinMaxStep: Array<number> = []
-	let showTrades: boolean = false
+	let tempMinMaxStep: Array<number> = []
+
 
 	function saveToLocalStorage() {
 		localStorage.setItem(id, JSON.stringify({
@@ -121,6 +123,7 @@
 		stageAction = actions[stage]
 		stageTrade = trades[stage]
 		stageMinMaxStep = [0, stagePrice.length - 1]
+		tempMinMaxStep = [0, stagePrice.length - 1]
 	}
 
 	function convertActionsToTrades(actions: Array<number>, closePrices: Array<number>){
@@ -201,11 +204,23 @@
 				errors={errors}
 				trades={stageTrade}/>
 		</div>
-		<div class="data">
+		<div
+			class="data"
+			role='button'
+			tabindex='-1'
+			on:mouseup={() => {stageMinMaxStep = tempMinMaxStep}}>
 			<div>
+				<div class="timeframe">
+					<Slider
+						bind:value={tempMinMaxStep}
+						min={0}
+						max={stagePrice.length - 1}
+						step={10}
+						order={true}
+						range/>
+				</div>
 				<Metrics
 					bind:minMaxStep={stageMinMaxStep}
-					bind:showTrades={showTrades}
 					actions={stageAction}
 					closePrices={stagePrice}
 					volumes={stageVolume}
@@ -269,5 +284,13 @@
 			grid-template-columns: 1fr 1fr;
 			grid-gap: 25px;
 		}
+	}
+    .timeframe {
+		--progress-bg: #ff4000cc;
+		--thumb-bg: #ff4000;
+		display: flex;
+		justify-content: center;
+        margin-left: 25px;
+        margin-right: 10px;
 	}
 </style>
